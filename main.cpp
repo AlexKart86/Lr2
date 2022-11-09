@@ -28,10 +28,10 @@ int main(void)
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOB, ENABLE);
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM1, ENABLE);
 
-	//A0 and A2 input mode 
+	//A0 input mode 
 	GPIO_StructInit(&port);
 	port.GPIO_Mode = GPIO_Mode_IPU;
-	port.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_2;
+	port.GPIO_Pin =  GPIO_Pin_0;
 	port.GPIO_Speed = GPIO_Speed_2MHz;
 	GPIO_Init(GPIOA, &port);
 	
@@ -64,20 +64,18 @@ int main(void)
   TIM_Cmd(TIM1, ENABLE);
 	TIM_CtrlPWMOutputs(TIM1, ENABLE); //turn on MainOutputs. Required for TIM1, not required for others 
 	
-	
+	//  1 - increase pulse
+	// -1 - descrease pulse
+	int direction = 1;
 	
 	while (1) {
-		//Button A0 pressed - increase pulse to decrease pulse on inverted pin B15
+		
+		//Button A0 pressed - decrase/increase pulse 
 		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_0) == 0) {
-			if (TIM_Pulse < PERIOD){
-					TIM_Pulse++;
-					TIM1->CCR3 = TIM_Pulse;
-			}
-		}
-		//Button A2 pressed - decrase pulse to increase pulse on inverted pin B15
-		if (GPIO_ReadInputDataBit(GPIOA, GPIO_Pin_2) == 0) {
-				if (TIM_Pulse > 0)
-				 TIM_Pulse--;
+				//if max/min value reached change direction			
+				if (TIM_Pulse > PERIOD || TIM_Pulse <0)
+				   direction *= -1;
+				TIM_Pulse += direction;
 				TIM1->CCR3 = TIM_Pulse;
 		}
 		// delay to prevent contact bounce
