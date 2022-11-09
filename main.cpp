@@ -9,7 +9,6 @@
 //B13, B14 - PWM 0.15C
 //B15 - variable PWM 
 //A0 button - decreate pulse
-//A2 button - increase pulse
 
 #define PERIOD (uint16_t) (SystemCoreClock / 10000)  //Amount of timer ticks for one period
 #define FREQUENT 1  //Amount of periods in one second
